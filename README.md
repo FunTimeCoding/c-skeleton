@@ -1,13 +1,30 @@
 # CSkeleton
 
+## Usage
+
+This section explains how to use this project.
+
+Run the main entry point program.
+
+```sh
+build/cs
+```
+
+
 ## Development
 
 This section explains how to use scripts that are intended to ease the development of this project.
 
-Build the project like Jenkins.
+Install development tools.
 
 ```sh
-./build.sh
+# TODO: Explain how to install tools required for the development of this project.
+```
+
+Run style check and show all concerns.
+
+```sh
+./run-style-check.sh
 ```
 
 Build and run the project.
@@ -16,8 +33,8 @@ Build and run the project.
 ./build.sh --run
 ```
 
-Run the program.
+Build the project like Jenkins.
 
 ```sh
-build/cs
+./build.sh
 ```
