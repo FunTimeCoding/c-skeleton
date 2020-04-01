@@ -1,4 +1,10 @@
-build
-tmp
-.vagrant
-cmake-build-debug
+/build
+/tmp
+/.vagrant
+/debian/files
+/debian/debhelper-build-stamp
+/debian/c-skeleton
+/debian/c-skeleton.substvars
+/documentation/man/*.1
+/.scannerwork
+/cmake-build-debug
