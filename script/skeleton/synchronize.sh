@@ -69,4 +69,4 @@ UNDERSCORE=$(echo "${DASH}" | ${SED} --regexp-extended 's/-/_/g')
 # shellcheck disable=SC2016
 ${FIND} . -regextype posix-extended -type f -regex "${INCLUDE_FILTER}" -exec sh -c '${1} --in-place --expression "s/CSkeleton/${2}/g" --expression "s/c-skeleton/${3}/g" --expression "s/c_skeleton/${4}/g" --expression "s/cs\\\\/${5}\\\\/g" "${6}"' '_' "${SED}" "${NAME}" "${DASH}" "${UNDERSCORE}" "${INITIALS}" '{}' \;
 # shellcheck disable=SC1117
-${SED} --in-place --expression "s/bin\/ss/bin\/${INITIALS}/g" README.md Dockerfile
+${SED} --in-place --expression "s/build\/cs/build\/${INITIALS}/g" README.md Dockerfile
