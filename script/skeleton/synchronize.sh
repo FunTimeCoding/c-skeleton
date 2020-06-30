@@ -1,5 +1,12 @@
 #!/bin/sh -e
 
+DIRECTORY=$(dirname "${0}")
+SCRIPT_DIRECTORY=$(
+    cd "${DIRECTORY}" || exit 1
+    pwd
+)
+# shellcheck source=/dev/null
+. "${SCRIPT_DIRECTORY}/../../configuration/project.sh"
 TARGET="${1}"
 
 if [ "${TARGET}" = '' ]; then
@@ -37,11 +44,29 @@ mkdir -p "${TARGET}/documentation"
 cp -R documentation/* "${TARGET}/documentation"
 mkdir -p "${TARGET}/script"
 cp -R script/* "${TARGET}/script"
+mkdir -p "${TARGET}/debian"
+cp -R debian/* "${TARGET}/debian"
+mkdir -p "${TARGET}/configuration"
+cp -R configuration/* "${TARGET}/configuration"
+mkdir -p "${TARGET}/inventory"
+cp -R inventory/* "${TARGET}/inventory"
 cp .gitignore "${TARGET}"
+cp playbook.yaml "${TARGET}"
 cp Vagrantfile "${TARGET}"
+cp Dockerfile "${TARGET}"
+cp Jenkinsfile "${TARGET}"
+cp sonar-project.properties "${TARGET}"
 cd "${TARGET}" || exit 1
-rm -rf script/skeleton
+echo "${NAME}" | grep --quiet 'Skeleton$' && IS_SKELETON=true || IS_SKELETON=false
+
+if [ "${IS_SKELETON}" = false ]; then
+    rm -rf script/skeleton
+fi
+
 DASH=$(echo "${NAME}" | ${SED} --regexp-extended 's/([A-Za-z0-9])([A-Z])/\1-\2/g' | tr '[:upper:]' '[:lower:]')
 INITIALS=$(echo "${NAME}" | ${SED} 's/\([A-Z]\)[a-z]*/\1/g' | tr '[:upper:]' '[:lower:]')
+UNDERSCORE=$(echo "${DASH}" | ${SED} --regexp-extended 's/-/_/g')
 # shellcheck disable=SC2016
-${FIND} . -type f -regextype posix-extended ! -regex '^.*/(build|\.git|\.idea)/.*$' -exec sh -c '${1} -i --expression "s/CSkeleton/${2}/g" --expression "s/c-skeleton/${3}/g" --expression "s/build\/cs/bin\/${4}/g" --expression "s/cs\\\\/${4}\\\\/g" "${5}"' '_' "${SED}" "${NAME}" "${DASH}" "${INITIALS}" '{}' \;
+${FIND} . -regextype posix-extended -type f -regex "${INCLUDE_FILTER}" -exec sh -c '${1} --in-place --expression "s/CSkeleton/${2}/g" --expression "s/c-skeleton/${3}/g" --expression "s/c_skeleton/${4}/g" --expression "s/cs\\\\/${5}\\\\/g" "${6}"' '_' "${SED}" "${NAME}" "${DASH}" "${UNDERSCORE}" "${INITIALS}" '{}' \;
+# shellcheck disable=SC1117
+${SED} --in-place --expression "s/build\/cs/build\/${INITIALS}/g" README.md Dockerfile
