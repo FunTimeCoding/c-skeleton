@@ -20,8 +20,8 @@ Vagrant.configure('2') do |c|
   else
     # TODO: Make this work on Windows.
     hostname = `. configuration/project.sh && echo "${PROJECT_NAME_INITIALS}"`
-    File.write('tmp/hostname.txt', hostname)
     hostname = hostname.chomp
+    File.write('tmp/hostname.txt', hostname + "\n")
   end
 
   if File.exist?('tmp/domain.txt')
@@ -29,8 +29,8 @@ Vagrant.configure('2') do |c|
   else
     # TODO: Make this work on Windows.
     domain = `hostname -f`
-    File.write('tmp/domain.txt', domain)
     domain = domain.chomp
+    File.write('tmp/domain.txt', domain + "\n")
   end
 
   c.vm.network :public_network, bridge: bridge
@@ -52,7 +52,14 @@ Vagrant.configure('2') do |c|
     c.vm.provision :ansible do |a|
       a.playbook = 'playbook.yaml'
       a.compatibility_mode = '2.0'
-      a.extra_vars = {}
+      a.extra_vars = {
+        'ansible_python_interpreter': '/usr/bin/python3',
+        'git': {
+          'protocol': 'ssh'
+        },
+        'ethernet_device': 'eth1',
+        'domain': domain
+      }
       # Allow remote_user: root.
       a.force_remote_user = false
       # Uncomment for more verbosity.
